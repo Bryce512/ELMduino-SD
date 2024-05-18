@@ -1,8 +1,10 @@
 #pragma once
 #include "Arduino.h"
 #include <unordered_map>
+#include <unordered_set>
 #include <functional>
 
+using namespace std;
 
 
 
@@ -308,7 +310,7 @@ public:
 	Stream* elm_port;
 
 	bool connected = false;
-    bool specifyNumResponses = true;
+	bool specifyNumResponses = true;
 	bool debugMode;
 	char* payload;
 	uint16_t PAYLOAD_LEN;
@@ -330,6 +332,11 @@ public:
 	uint8_t byteIndex;
 	uint8_t bitPosition;
 	byte bitMask;
+	uint8_t pid;
+	double tempC;
+	unordered_set<uint8_t> SupportedPIDs;
+	uint8_t currentPID;
+	// auto it;
 
 	struct dtcResponse {
 		uint8_t codesFound = 0;
@@ -450,8 +457,7 @@ public:
 
 	uint32_t supportedPIDs_C1_E0();
 
-
-
+	unordered_set<uint8_t> getSupportedPIDs();
 
 
 private:

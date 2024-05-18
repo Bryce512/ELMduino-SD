@@ -1,7 +1,5 @@
 #include "ELMduino.h"
 
-double tempC;
-
 /*
  bool ELM327::begin(Stream &stream, const bool& debug, const uint16_t& timeout, const char& protocol, const uint16_t& payloadLen, const byte& dataTimeout)
 
@@ -2276,11 +2274,13 @@ uint16_t ELM327::odometerReading()
 */
 void ELM327::sendCommand(const char *cmd)
 {
+    // Serial.println("Clearing payload buffer");
     // clear payload buffer
     memset(payload, '\0', PAYLOAD_LEN + 1);
 
     // reset input serial buffer and number of received bytes
     recBytes = 0;
+    // Serial.println("flushing input buffer");
     flushInputBuff();
     connected = false;
 
@@ -2292,7 +2292,7 @@ void ELM327::sendCommand(const char *cmd)
         Serial.print(F("Sending the following command/query: "));
         Serial.println(cmd);
     }
-
+    // Serial.println("trying to send command ");
     elm_port->print(cmd);
     elm_port->print('\r');
 
@@ -3085,7 +3085,7 @@ uint32_t ELM327::getPIDInterval(uint8_t pid) {
         pidInterval = SUPPORTED_PIDS_A1_C0;
     } else if (pid >= 0xC1 and pid <= 0xE0) {
         pidInterval = SUPPORTED_PIDS_C1_E0;
-    }
+    } else {return 0;}
     // Serial.print("PID Interval: ");Serial.println(pidInterval); 
     return pidInterval;
 }
@@ -3211,3 +3211,52 @@ byte ELM327::getResponseByte(uint8_t byteIndex) {
         break;
     }
 }
+
+/*
+ bool ELM327::getSupportedPIDs()
+
+ Description:
+ ------------
+  * Creates a list (unordered set) of all the PIDs supported by a car.
+
+  * This is a convenience method that selects the correct supportedPIDS_xx_xx() query and parses
+    the bit-encoded result, returning a list of all supported PIDs from the ECU.
+
+ Inputs:
+ -------
+  * none
+
+ Return:
+ -------
+  * unordered_set - List of all PIDs supported by the ECU.
+*/
+// unordered_set<uint8_t> ELM327::getSupportedPIDs()
+// {
+//     SupportedPIDs.clear();
+//     pid = 0;
+//     for (pid = 0; pid <= 192; pid += 32) {
+//         processPIDInterval(pid);
+        
+//         for (int bitPosition = 0; bitPosition < 8; ++bitPosition) {
+//             currentPID = pid + bitPosition;
+//             // Calculate the byte index and bit position for the adjusted PID
+//             byteIndex = currentPID / 8;
+//             bitPosition = currentPID % 8;
+
+//             // Get the byte from the response
+//             indexByte = getResponseByte(byteIndex);
+
+//             // Calculate the bit mask for the current bit
+//             bitMask = 1 << bitPosition;
+
+//             // Check if the corresponding bit is set in the response
+//             bool supported = (indexByte & bitMask) != 0;
+
+//             // If the bit is set, the PID is supported
+//             if (supported) {
+//                 SupportedPIDs.insert(currentPID);
+//             }
+//         }
+//     }
+//     return SupportedPIDs;
+// }
